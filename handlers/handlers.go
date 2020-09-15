@@ -14,9 +14,11 @@ import (
 /* Manejadores seteo puertos */
 func Manejadores() {
 	router := mux.NewRouter()
-
+	/*clientes*/
 	router.HandleFunc("/registro", middlew.ChequeoBD(routers.Registro)).Methods("POST")
 	router.HandleFunc("/registrosall", middlew.ChequeoBD(routers.RegistroLista)).Methods("POST")
+	/*groomer*/
+	router.HandleFunc("/groomersall", middlew.ChequeoBD(routers.GroomerLista)).Methods("POST")
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
