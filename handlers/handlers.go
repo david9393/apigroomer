@@ -19,6 +19,11 @@ func Manejadores() {
 	router.HandleFunc("/registrosall", middlew.ChequeoBD(routers.RegistroLista)).Methods("POST")
 	/*groomer*/
 	router.HandleFunc("/groomersall", middlew.ChequeoBD(routers.GroomerLista)).Methods("POST")
+	/*razas*/
+	router.HandleFunc("/razasall", middlew.ChequeoBD(routers.RazasLista)).Methods("GET")
+	/*servicios*/
+	router.HandleFunc("/serviciosall", middlew.ChequeoBD(routers.ServiciosLista)).Methods("Post")
+
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "8080"
