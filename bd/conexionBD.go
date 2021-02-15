@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sync"
 
 	_ "github.com/lib/pq"
 )
@@ -13,7 +14,7 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = "admin"
-	dbname   = "groomerapp"
+	dbname   = "sistema"
 	//host     = "ec2-54-243-67-199.compute-1.amazonaws.com"
 	//port     = 5432
 	//user     = "qtrvvsjxosvyjl"
@@ -21,33 +22,32 @@ const (
 	//dbname   = "dcn8aj88hcvj73"
 )
 
-var PostgresCN = ConectarBD()
+//var PostgresCN = ConectarBD()
+var (
+	once sync.Once
+	db   *sql.DB
+)
 
-func ConectarBD() *sql.DB {
-	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-	// "password=%s dbname=%s",
-	// host, port, user, password, dbname)
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Printf(err.Error())
-		return db
-	}
-	err = db.Ping()
-	if err != nil {
-		log.Printf(err.Error())
-		return db
-	}
-	log.Printf("Conexion exitosaa")
-	return db
+func ConectarBD() {
+	once.Do(func() {
+		var err error
+		psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+			"password=		%s dbname=%s sslmode=disable",
+			host, port, user, password, dbname)
+		db, err = sql.Open("postgres", psqlInfo)
+		if err != nil {
+			log.Fatalf("error al conectarse")
+		}
+		err = db.Ping()
+		if err != nil {
+			log.Fatalf("no ping")
+		}
+		log.Printf("Conexion exitosaa")
+
+	})
 }
 
-func ChequeoConnection() int {
-	err := PostgresCN.Ping()
-	if err != nil {
-		return 0
-	}
-	return 1
+//pool retorna una unica instancia de db
+func Pool() *sql.DB {
+	return db
 }
