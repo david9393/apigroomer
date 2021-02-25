@@ -1,6 +1,7 @@
 package bd
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/david9393/apigroomer/models"
@@ -13,7 +14,7 @@ func TraerVendedores(v models.Vendedores) (error, []models.Vendedores) {
 
 	db := Pool()
 	const exec = `SELECT id, apellidos, nombres, direccion, email, telefono
-	FROM public.t12_vendedores where  ($1 =0 OR id = $1) `
+	FROM public.t12_vendedores where  ($1 =0 OR id = $1) ORDER BY nombres ASC `
 
 	rows, err := db.Query(exec, v.Id)
 	if err != nil {
@@ -23,12 +24,19 @@ func TraerVendedores(v models.Vendedores) (error, []models.Vendedores) {
 	defer rows.Close()
 	for rows.Next() {
 		vendedor := &models.Vendedores{}
+		direccionNull := sql.NullString{}
+		emailNull := sql.NullString{}
+		telefonoNull := sql.NullString{}
+
 		err = rows.Scan(&vendedor.Id, &vendedor.Apellidos, &vendedor.Nombres,
-			&vendedor.Direccion, &vendedor.Email, &vendedor.Telefono)
+			&direccionNull, &emailNull, &telefonoNull)
 		if err != nil {
 			log.Fatal(err)
 			return err, listVendedores
 		}
+		vendedor.Direccion = direccionNull.String
+		vendedor.Email = emailNull.String
+		vendedor.Telefono = telefonoNull.String
 		listVendedores = append(listVendedores, *vendedor)
 	}
 	return nil, listVendedores
@@ -37,7 +45,7 @@ func CrearVendedores(v models.Vendedores) error {
 	db := Pool()
 	const exec = `INSERT INTO public.t12_vendedores(
 		apellidos, nombres, direccion, email, telefono)
-		VALUES ($1,$2,$3,$4,$5`
+		VALUES ($1,$2,$3,$4,$5)`
 	args := parametrosVendedores(v)
 	_, err := db.Exec(exec, args...)
 	if err != nil {

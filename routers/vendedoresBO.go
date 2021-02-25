@@ -2,6 +2,7 @@ package routers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/david9393/apigroomer/bd"
 	"github.com/david9393/apigroomer/models"
@@ -12,6 +13,9 @@ func CrearVendedor(c echo.Context) error {
 
 	data := models.Vendedores{}
 	err := c.Bind(&data)
+	data.Nombres = strings.Title(data.Nombres)
+	data.Apellidos = strings.Title(data.Apellidos)
+	data.Email = strings.ToLower(data.Email)
 	if err != nil {
 		resp := NewResponse(Error, ErrorMessage, nil)
 		return c.JSON(http.StatusBadRequest, resp)
