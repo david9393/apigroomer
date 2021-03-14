@@ -28,6 +28,8 @@ func main() {
 	handlers.RouteProductos(e)
 	handlers.RouteVendedores(e)
 	handlers.RouteClientes(e)
+	handlers.RouteFactura(e)
+	handlers.RouteMediosPago(e)
 	log.Println("Servidor iniciado en el puerto 8080")
 
 	err = e.Start(":8080")

@@ -14,6 +14,7 @@ type Producto struct {
 	Maximo             float32              `json:"maximo"`
 	Servicio           bool                 `json:"servicio"`
 	ControlaInventario bool                 `json:"controlaInventario"`
+	Saldo              float32              `json:"saldo"`
 	ListCategorias     []CategoriasProducto `json:"listCategorias"`
 }
 

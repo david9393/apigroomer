@@ -55,3 +55,12 @@ func RouteVendedores(e *echo.Echo) {
 	menu.POST("/all", routers.TraerVendedores)
 
 }
+func RouteFactura(e *echo.Echo) {
+	menu := e.Group("/factura")
+	menu.POST("/add", routers.CrearFactura)
+}
+func RouteMediosPago(e *echo.Echo) {
+	menu := e.Group("/mediospago")
+	menu.POST("/add", routers.CrearMedios)
+	menu.POST("/all", routers.TraerMedios)
+}

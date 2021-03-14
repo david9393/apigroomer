@@ -13,9 +13,12 @@ func TraerProductoId(p models.Producto) (error, []models.Producto) {
 	listProductos := []models.Producto{}
 
 	db := Pool()
-	const exec = `SELECT id, nombre, codigo, idtipo, idmarca, costo, precio, 
-	preciominimo, iva, minimo, maximo, servicio, controlainventario
-	FROM public.t10_productos where  ($1 =0 OR id = $1) `
+	const exec = `SELECT t10_productos.id, nombre, codigo, idtipo, idmarca, costo, precio, 
+	preciominimo, iva, minimo, maximo, servicio, controlainventario,coalesce(saldo,0)
+	FROM public.t10_productos 
+	LEFT OUTER JOIN t15_encabezado_inventario  
+	ON t15_encabezado_inventario.idproducto=t10_productos.id	
+	where  ($1 =0 OR t10_productos.id = $1) `
 
 	rows, err := db.Query(exec, p.Id)
 	if err != nil {
@@ -27,7 +30,7 @@ func TraerProductoId(p models.Producto) (error, []models.Producto) {
 		producto := &models.Producto{}
 		err = rows.Scan(&producto.Id, &producto.Nombre, &producto.Codigo, &producto.IdTipo,
 			&producto.IdMarca, &producto.Costo, &producto.Precio, &producto.PrecioMinimo, &producto.Iva,
-			&producto.Minimo, &producto.Maximo, &producto.Servicio, &producto.ControlaInventario)
+			&producto.Minimo, &producto.Maximo, &producto.Servicio, &producto.ControlaInventario,&producto.Saldo)
 		if err != nil {
 			log.Fatal(err)
 			return err, listProductos
